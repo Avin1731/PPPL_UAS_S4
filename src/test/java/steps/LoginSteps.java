@@ -6,6 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.And;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.junit.jupiter.api.Assertions;
 import pages.LoginPage;
 
@@ -15,8 +16,13 @@ public class LoginSteps {
 
     @Given("User membuka halaman login SIPELITA local di {string}")
     public void userMembukaHalamanLoginSipelitaLocalDi(String url) {
-        // Membuka browser Chrome otomatis
-        driver = new ChromeDriver();
+        // Membuka browser Chrome otomatis (headful mode agar terlihat di layar)
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--remote-allow-origins=*");
+        driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         driver.get(url);
 
@@ -51,6 +57,8 @@ public class LoginSteps {
         boolean validasiLolos = urlSekarang.contains("admin-dashboard") || urlSekarang.contains("login");
         Assertions.assertTrue(validasiLolos, "Proses eksekusi login sukses dijalankan oleh Selenium.");
 
+        // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
+        try { Thread.sleep(3000); } catch (InterruptedException e) {}
         // Tutup browser dengan aman
         if (driver != null) {
             driver.quit();
@@ -69,6 +77,8 @@ public class LoginSteps {
             Assertions.assertTrue(true, "Simulasi validasi pesan error berhasil dilewati.");
         } finally {
             // Browser dipastikan tetap menutup dengan aman setelah pengujian selesai
+            // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
+            try { Thread.sleep(3000); } catch (InterruptedException e) {}
             if (driver != null) {
                 driver.quit();
             }

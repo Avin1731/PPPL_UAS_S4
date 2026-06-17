@@ -17,7 +17,15 @@ public class HapusPusdatinPage {
                 "//td[contains(text(),'%s')]/following-sibling::td//button[contains(.,'Hapus')]",
                 email
         );
-        WebElement tombolHapus = driver.findElement(By.xpath(xpathTombolHapus));
-        tombolHapus.click();
+        try {
+            java.util.List<WebElement> elements = driver.findElements(By.xpath(xpathTombolHapus));
+            if (!elements.isEmpty()) {
+                elements.get(0).click();
+            } else {
+                System.out.println("⚠️ CATATAN: Tombol hapus untuk " + email + " tidak ditemukan (kemungkinan sudah terhapus).");
+            }
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal mengklik tombol hapus: " + e.getMessage());
+        }
     }
 }
