@@ -86,7 +86,7 @@ Laporan ini memuat grafik status hijau/merah, detail langkah Gherkin yang diekse
 
 ---
 
-## 🐛 BAGIAN 5: BUG REPORTING (TEMUAN BUG NYATA)
+## 🐛 BAGIAN 5: BUG REPORTING
 
 Melalui pengujian otomatis menggunakan Selenium, kelompok kami menemukan **2 temuan bug/isu** pada rilis *production* aplikasi web:
 
