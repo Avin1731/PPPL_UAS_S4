@@ -37,3 +37,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Personal presentation notes
+LAPORAN_DAN_PRESENTASI.md
