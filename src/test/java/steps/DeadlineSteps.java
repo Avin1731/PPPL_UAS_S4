@@ -94,9 +94,6 @@ public class DeadlineSteps {
         try {
             String pesanAsli = deadlinePage.ambilPesanAlert();
             Assertions.assertEquals(pesanErrorDiharapkan, pesanAsli);
-        } catch (Exception e) {
-            System.out.println("⚠️ CATATAN BUG FE: Elemen validasi error HTML belum muncul di UI.");
-            Assertions.assertTrue(true, "Simulasi negative case dilewati dengan aman.");
         } finally {
             // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
             try { Thread.sleep(3000); } catch (InterruptedException e) {}
