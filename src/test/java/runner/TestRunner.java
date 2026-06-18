@@ -13,7 +13,7 @@ import io.cucumber.core.options.Constants;
 )
 @ConfigurationParameter(
         key = Constants.PLUGIN_PROPERTY_NAME,
-        value = "pretty, html:target/cucumber-reports.html" // Bikin laporan otomatis
+        value = "pretty, html:target/cucumber-reports.html, json:target/cucumber.json" // Bikin laporan otomatis
 )
 public class TestRunner {
     // Tetap dikosongkan ya Princess
