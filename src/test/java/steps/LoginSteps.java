@@ -6,8 +6,13 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.And;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.junit.jupiter.api.Assertions;
 import pages.LoginPage;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginSteps {
     WebDriver driver;
@@ -15,10 +20,35 @@ public class LoginSteps {
 
     @Given("User membuka halaman login SIPELITA local di {string}")
     public void userMembukaHalamanLoginSipelitaLocalDi(String url) {
-        // Membuka browser Chrome otomatis
-        driver = new ChromeDriver();
+        // Membuka browser Chrome otomatis (headful mode agar terlihat di layar)
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--remote-allow-origins=*");
+
+        // =================================================================
+        // 2. TAMBAHKAN KONFIGURASI DOWNLOAD DI SINI (SEBELUM NEW CHROMEDRIVER)
+        // =================================================================
+        Map<String, Object> prefs = new HashMap<>();
+
+        // Tentukan path folder 'target/downloads' di dalam project kamu
+        String downloadPath = System.getProperty("user.dir") + File.separator + "target" + File.separator + "downloads";
+
+        // Matikan popup konfirmasi download dan set direktori default-nya
+        prefs.put("profile.default_content_settings.popups", 0);
+        prefs.put("download.default_directory", downloadPath);
+
+        // Masukkan preferensi ini ke dalam ChromeOptions
+        options.setExperimentalOption("prefs", prefs);
+        // =================================================================
+
+        // 3. Masukkan options ke dalam ChromeDriver
+        driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        driver.get(url);
+        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(15));
+
+        // Buka URL
 
         // Menghubungkan ke halaman POM kita
         loginPage = new LoginPage(driver);
@@ -51,6 +81,8 @@ public class LoginSteps {
         boolean validasiLolos = urlSekarang.contains("admin-dashboard") || urlSekarang.contains("login");
         Assertions.assertTrue(validasiLolos, "Proses eksekusi login sukses dijalankan oleh Selenium.");
 
+        // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
+        try { Thread.sleep(3000); } catch (InterruptedException e) {}
         // Tutup browser dengan aman
         if (driver != null) {
             driver.quit();
@@ -69,6 +101,8 @@ public class LoginSteps {
             Assertions.assertTrue(true, "Simulasi validasi pesan error berhasil dilewati.");
         } finally {
             // Browser dipastikan tetap menutup dengan aman setelah pengujian selesai
+            // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
+            try { Thread.sleep(3000); } catch (InterruptedException e) {}
             if (driver != null) {
                 driver.quit();
             }

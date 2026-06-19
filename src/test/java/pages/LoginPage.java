@@ -15,6 +15,12 @@ public class LoginPage {
     // 2. Jembatan penghubung driver robot
     public LoginPage(WebDriver driver) {
         this.driver = driver;
+        try {
+            new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15))
+                .until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(kotakEmail));
+        } catch (Exception e) {
+            System.out.println("⚠️ WARNING: Timed out waiting for login page email field: " + e.getMessage());
+        }
     }
 
     // 3. Gerakan atau aksi yang bisa dilakukan si robot

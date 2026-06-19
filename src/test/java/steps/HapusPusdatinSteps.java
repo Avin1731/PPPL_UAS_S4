@@ -5,6 +5,9 @@ import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.junit.jupiter.api.Assertions;
 import pages.LoginPage;
 import pages.HapusPusdatinPage;
@@ -16,23 +19,33 @@ public class HapusPusdatinSteps {
 
     @Given("User sudah login dan berada di halaman kelola akun pusdatin")
     public void userSudahLoginDanBeradaDiHalamanKelolaAkunPusdatin() {
-        driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--remote-allow-origins=*");
+        driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(15));
 
         // 1. Proses login bypass formal
-        driver.get("http://localhost:3000/login");
+        driver.get("https://area-fe-pad.vercel.app/login");
         loginPage = new LoginPage(driver);
         loginPage.ketikEmail("admin@test.com");
         loginPage.ketikPassword("password");
         loginPage.klikTombolMasuk();
 
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        // Tunggu login sukses
+        try {
+            new WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+                .until(ExpectedConditions.urlContains("admin-dashboard"));
+        } catch (Exception e) {}
 
         // 2. Tembak rute halaman kelola akun pusdatin sesuai screenshot
-        driver.get("http://localhost:3000/admin-dashboard/settings");
+        driver.get("https://area-fe-pad.vercel.app/admin-dashboard/settings");
 
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        // Jeda waktu tunggu halaman render data tabel
+        try { Thread.sleep(6000); } catch (InterruptedException e) {}
         hapusPusdatinPage = new HapusPusdatinPage(driver);
     }
 
@@ -52,6 +65,8 @@ public class HapusPusdatinSteps {
 
         Assertions.assertTrue(urlSekarang.contains("settings"), "Robot sukses mengeksekusi aksi hapus.");
 
+        // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
+        try { Thread.sleep(3000); } catch (InterruptedException e) {}
         driver.quit();
     }
 }
