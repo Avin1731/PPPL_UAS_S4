@@ -1,3 +1,4 @@
+@tito
 Feature: Hapus Akun Pusdatin
 
   Scenario: Sukses menghapus akun Pusdatin yang terdaftar

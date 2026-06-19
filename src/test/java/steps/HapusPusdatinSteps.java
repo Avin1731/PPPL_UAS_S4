@@ -3,6 +3,7 @@ package steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.After;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -26,7 +27,7 @@ public class HapusPusdatinSteps {
         options.addArguments("--remote-allow-origins=*");
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(15));
+        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(2));
 
         // 1. Proses login bypass formal
         driver.get("https://area-fe-pad.vercel.app/login");
@@ -44,8 +45,11 @@ public class HapusPusdatinSteps {
         // 2. Tembak rute halaman kelola akun pusdatin sesuai screenshot
         driver.get("https://area-fe-pad.vercel.app/admin-dashboard/settings");
 
-        // Jeda waktu tunggu halaman render data tabel
-        try { Thread.sleep(6000); } catch (InterruptedException e) {}
+        // Tunggu halaman render data tabel
+        try {
+            new WebDriverWait(driver, java.time.Duration.ofSeconds(15))
+                .until(ExpectedConditions.visibilityOfElementLocated(org.openqa.selenium.By.xpath("//a[contains(@href,'settings/add')] | //button[contains(.,'Tambah')] | //table")));
+        } catch (Exception e) {}
         hapusPusdatinPage = new HapusPusdatinPage(driver);
     }
 
@@ -53,8 +57,8 @@ public class HapusPusdatinSteps {
     public void userMengklikTombolHapusPadaAkun(String email) {
         hapusPusdatinPage.klikHapusBerdasarkanEmail(email);
 
-        // Jeda 2 detik jika frontend menampilkan konfirmasi pop-up/proses backend menghapus
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        // Jeda 1 detik jika frontend menampilkan konfirmasi pop-up/proses backend menghapus
+        try { Thread.sleep(1000); } catch (InterruptedException e) {}
     }
 
     @Then("Sistem berhasil memperbarui daftar akun pusdatin")
@@ -64,9 +68,14 @@ public class HapusPusdatinSteps {
         System.out.println("🔗 URL Kelola Pusdatin: " + urlSekarang);
 
         Assertions.assertTrue(urlSekarang.contains("settings"), "Robot sukses mengeksekusi aksi hapus.");
+    }
 
-        // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
-        try { Thread.sleep(3000); } catch (InterruptedException e) {}
-        driver.quit();
+    @After
+    public void tearDown() {
+        if (driver != null) {
+            try { Thread.sleep(3000); } catch (InterruptedException e) {}
+            driver.quit();
+            driver = null;
+        }
     }
 }

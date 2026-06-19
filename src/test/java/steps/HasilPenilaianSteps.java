@@ -1,6 +1,7 @@
 package steps;
 
 import io.cucumber.java.en.*;
+import io.cucumber.java.After;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -24,7 +25,7 @@ public class HasilPenilaianSteps {
         options.addArguments("--remote-allow-origins=*");
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(15));
+        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(2));
 
         driver.get("https://area-fe-pad.vercel.app/login");
         loginPage = new LoginPage(driver);
@@ -40,8 +41,11 @@ public class HasilPenilaianSteps {
 
         driver.get("https://area-fe-pad.vercel.app/dlh-dashboard/penilaian/hasil-penilaian");
 
-        // Jeda waktu tunggu halaman render
-        try { Thread.sleep(6000); } catch (InterruptedException e) {}
+        // Tunggu modal Belum Dimulai render di layar
+        try {
+            new WebDriverWait(driver, java.time.Duration.ofSeconds(15))
+                .until(ExpectedConditions.visibilityOfElementLocated(org.openqa.selenium.By.xpath("//*[contains(text(),'BELUM DIMULAI')]")));
+        } catch (Exception e) {}
         penilaianPage = new HasilPenilaianPage(driver);
     }
 
@@ -53,13 +57,24 @@ public class HasilPenilaianSteps {
     @And("User mengklik tombol Mengerti untuk menutup alert")
     public void userMengklikTombolMengertiUntukMenutupAlert() {
         penilaianPage.klikMengerti();
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        // Tunggu hingga modal dialog tertutup/menghilang dari DOM/layar secara dinamis
+        try {
+            new WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+                .until(ExpectedConditions.invisibilityOfElementLocated(org.openqa.selenium.By.xpath("//*[contains(text(),'BELUM DIMULAI')]")));
+        } catch (Exception e) {}
     }
 
     @Then("Modal alert harus tertutup dari tampilan layar")
     public void modalAlertHarusTertutupDariTampilanLayar() {
         Assertions.assertFalse(penilaianPage.modalMuncul(), "Modal Belum Dimulai telah ditutup.");
-        try { Thread.sleep(3000); } catch (InterruptedException e) {}
-        driver.quit();
+    }
+
+    @After
+    public void tearDown() {
+        if (driver != null) {
+            try { Thread.sleep(3000); } catch (InterruptedException e) {}
+            driver.quit();
+            driver = null;
+        }
     }
 }

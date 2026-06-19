@@ -1,6 +1,7 @@
 package steps;
 
 import io.cucumber.java.en.*;
+import io.cucumber.java.After;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -39,7 +40,7 @@ public class DownloadSteps {
 
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(15));
+        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(2));
 
         driver.get("https://area-fe-pad.vercel.app/login");
         loginPage = new LoginPage(driver);
@@ -55,8 +56,11 @@ public class DownloadSteps {
 
         driver.get("https://area-fe-pad.vercel.app/dlh-dashboard/pengiriman-data/template");
 
-        // Jeda waktu tunggu halaman render
-        try { Thread.sleep(6000); } catch (InterruptedException e) {}
+        // Tunggu tombol unduh render di layar
+        try {
+            new WebDriverWait(driver, java.time.Duration.ofSeconds(15))
+                .until(ExpectedConditions.visibilityOfElementLocated(org.openqa.selenium.By.xpath("/html/body/div[3]/main/div/div[2]/div[2]/div[2]/button | //button[contains(.,'Unduh')]")));
+        } catch (Exception e) {}
 
         // Inisialisasi halaman dokumen
         dokumenPage = new DokumenPage(driver);
@@ -67,8 +71,8 @@ public class DownloadSteps {
         // Panggil method untuk klik tombol dari Page Object
         dokumenPage.klikTombolUnduh();
 
-        // Beri jeda agar browser punya waktu untuk memulai proses unduhan
-        try { Thread.sleep(3000); } catch (InterruptedException e) {}
+        // Beri jeda 1 detik agar browser punya waktu untuk menginisialisasi proses unduhan
+        try { Thread.sleep(1000); } catch (InterruptedException e) {}
     }
 
     @Then("file template berhasil diunduh ke direktori lokal")
@@ -90,20 +94,26 @@ public class DownloadSteps {
             try { Thread.sleep(1000); } catch (InterruptedException e) {}
         }
 
-        // Verifikasi bahwa file ditemukan
-        Assertions.assertTrue(fileExists, "Gagal menemukan file " + expectedFileName + " di folder: " + downloadPath);
-
-        // Hapus file agar folder tetap bersih untuk tes selanjutnya
-        if (fileExists) {
-            downloadedFile.delete();
+        try {
+            // Verifikasi bahwa file ditemukan
+            Assertions.assertTrue(fileExists, "Gagal menemukan file " + expectedFileName + " di folder: " + downloadPath);
+        } catch (AssertionError e) {
+            System.err.println("❌ TEST GAGAL: File template tidak ditemukan di direktori unduhan!");
+            throw e;
+        } finally {
+            // Hapus file agar folder tetap bersih untuk tes selanjutnya
+            if (fileExists) {
+                downloadedFile.delete();
+            }
         }
+    }
 
-        // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
-        try { Thread.sleep(3000); } catch (InterruptedException e) {}
-
-        // Tutup browser
+    @After
+    public void tearDown() {
         if (driver != null) {
+            try { Thread.sleep(3000); } catch (InterruptedException e) {}
             driver.quit();
+            driver = null;
         }
     }
 }

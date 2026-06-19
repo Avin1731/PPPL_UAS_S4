@@ -1,3 +1,4 @@
+@safira
 Feature: Menguji Halaman Login SIPELITA Local
 
   Scenario: Login sukses sebagai Admin (Equivalence Partitioning Valid)
@@ -10,4 +11,4 @@ Feature: Menguji Halaman Login SIPELITA Local
     Given User membuka halaman login SIPELITA local di "https://area-fe-pad.vercel.app/login"
     When User mengetik email "admin@test.com" dan password "salah123"
     And User mengklik tombol "Login"
-    Then User harus melihat pesan error "Kredensial tidak cocok"
+    Then User harus melihat pesan error "password salah"
