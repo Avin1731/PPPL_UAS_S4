@@ -10,6 +10,10 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.junit.jupiter.api.Assertions;
 import pages.LoginPage;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoginSteps {
     WebDriver driver;
     LoginPage loginPage;
@@ -22,9 +26,29 @@ public class LoginSteps {
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--disable-gpu");
         options.addArguments("--remote-allow-origins=*");
+
+        // =================================================================
+        // 2. TAMBAHKAN KONFIGURASI DOWNLOAD DI SINI (SEBELUM NEW CHROMEDRIVER)
+        // =================================================================
+        Map<String, Object> prefs = new HashMap<>();
+
+        // Tentukan path folder 'target/downloads' di dalam project kamu
+        String downloadPath = System.getProperty("user.dir") + File.separator + "target" + File.separator + "downloads";
+
+        // Matikan popup konfirmasi download dan set direktori default-nya
+        prefs.put("profile.default_content_settings.popups", 0);
+        prefs.put("download.default_directory", downloadPath);
+
+        // Masukkan preferensi ini ke dalam ChromeOptions
+        options.setExperimentalOption("prefs", prefs);
+        // =================================================================
+
+        // 3. Masukkan options ke dalam ChromeDriver
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        driver.get(url);
+        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(15));
+
+        // Buka URL
 
         // Menghubungkan ke halaman POM kita
         loginPage = new LoginPage(driver);
