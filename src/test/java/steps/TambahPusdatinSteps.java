@@ -1,6 +1,7 @@
 package steps;
 
 import io.cucumber.java.en.*;
+import io.cucumber.java.After;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -24,7 +25,7 @@ public class TambahPusdatinSteps {
         options.addArguments("--remote-allow-origins=*");
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(15));
+        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(2));
 
         driver.get("https://area-fe-pad.vercel.app/login");
         loginPage = new LoginPage(driver);
@@ -41,8 +42,11 @@ public class TambahPusdatinSteps {
         // Tembak URL tambah sesuai screenshot
         driver.get("https://area-fe-pad.vercel.app/admin-dashboard/settings/add");
 
-        // Jeda waktu tunggu halaman render data
-        try { Thread.sleep(5000); } catch (InterruptedException e) {}
+        // Tunggu halaman render data dengan mendeteksi kotak nama
+        try {
+            new WebDriverWait(driver, java.time.Duration.ofSeconds(15))
+                .until(ExpectedConditions.visibilityOfElementLocated(org.openqa.selenium.By.xpath("//input[contains(@placeholder,'Nama') or contains(@placeholder,'Pusdatin')] | (//input[@type='text'])[1]")));
+        } catch (Exception e) {}
         tambahPage = new TambahPusdatinPage(driver);
     }
 
@@ -63,10 +67,19 @@ public class TambahPusdatinSteps {
 
     @Then("Sistem berhasil menyimpan akun dan kembali ke daftar pusdatin")
     public void sistemBerhasilMenyimpanAkunDanKembaliKeDaftarPusdatin() {
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        try {
+            new WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+                .until(ExpectedConditions.urlContains("settings"));
+        } catch (Exception e) {}
         Assertions.assertTrue(driver.getCurrentUrl().contains("settings"));
-        // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
-        try { Thread.sleep(3000); } catch (InterruptedException e) {}
-        driver.quit();
+    }
+
+    @After
+    public void tearDown() {
+        if (driver != null) {
+            try { Thread.sleep(3000); } catch (InterruptedException e) {}
+            driver.quit();
+            driver = null;
+        }
     }
 }

@@ -50,8 +50,17 @@ Pengujian otomatis ini dirancang dengan pendekatan **Behavior-Driven Development
 
 * **Teknologi Utama:** Java 17, Maven, Selenium WebDriver, Cucumber BDD, JUnit 5.
 * **Mode Browser:** *Visual (Headful Mode)* untuk demonstrasi langsung di layar.
-* **Wait Strategy:** Jeda 3 detik (`Thread.sleep(3000)`) di setiap akhir skenario sebelum browser ditutup otomatis.
+* **Wait Strategy:** Jeda 3 detik (`Thread.sleep(3000)`) di setiap akhir skenario sebelum browser ditutup otomatis (dikelola bersih oleh `@After` hook).
 * **Automated Reporting:** Menggunakan **Masterthought Cucumber Reporting** untuk menghasilkan visual dashboard analitik premium di `target/cucumber-html-reports/cucumber-html-reports/overview-features.html`.
+* **Selective Tag Execution:** Skenario dikelompokkan menggunakan Cucumber Tags (`@safira`, `@tito`, `@avin`, `@naziri`).
+  * Perintah PowerShell untuk menjalankan tag tertentu (wajib menggunakan tanda kutip ganda untuk parameter `-D` agar tidak terjadi error parsing):
+    ```powershell
+    $env:MAVEN_OPTS="-Xms256m -Xmx512m"; mvn verify "-Dcucumber.filter.tags=@namaTag"
+    ```
+  * Perintah PowerShell untuk menjalankan seluruh skenario sekaligus (1 paket):
+    ```powershell
+    $env:MAVEN_OPTS="-Xms256m -Xmx512m"; mvn verify
+    ```
 
 ---
 
@@ -98,14 +107,15 @@ Berikut adalah daftar anggota tim pengembang aplikasi SIPELITA:
 ---
 
 ## 🛠️ 5. Pembagian Tugas Pengujian (Test Automation Roles)
-*(Silakan edit tabel di bawah ini setelah berdiskusi dengan anggota kelompok)*
 
-| Nama Anggota | NIM | Peran / Tugas Pengujian | Fitur yang Dikerjakan |
-| :--- | :---: | :--- | :--- |
-| **Safira Dwita Ramadhani** | `24/541969/SV/24981` | - | - |
-| **Tito Alla Khairi** | `24/544463/SV/25424` | - | - |
-| **Hilarius Christiano Avin** | `24/542159/SV/25009` | - | - |
-| **Muhammad Adib Naziri** | `24/540019/SV/24747` | - | - |
+Berikut adalah pembagian tugas dan fitur pengujian BDD berdasarkan kontributor kelompok:
+
+| Nama Anggota | NIM | Fitur yang Dikerjakan | Tag Cucumber |
+| :--- | :---: | :--- | :---: |
+| **Safira Dwita Ramadhani** | `24/541969/SV/24981` | 1. Login Admin (`login.feature`) <br> 2. Tambah Pusdatin (`TambahPusdatin.feature`) | `@safira` |
+| **Tito Alla Khairi** | `24/544463/SV/25424` | 1. Unduh Dokumen DLH (`DokumenDLH.feature`) <br> 2. Hapus Pusdatin (`HapusPusdatin.feature`) | `@tito` |
+| **Hilarius Christiano Avin** | `24/542159/SV/25009` | 1. Pengisian IKLH DLH (`PengisianIKLH.feature`) <br> 2. Verifikasi IKLH Pusdatin (`VerifikasiIKLH.feature`) | `@avin` |
+| **Muhammad Adib Naziri** | `24/540019/SV/24747` | 1. Hasil Penilaian Modal (`HasilPenilaianModal.feature`) <br> 2. Manajemen Deadline (`DeadlinePage.feature`) | `@naziri` |
 
 ---
 

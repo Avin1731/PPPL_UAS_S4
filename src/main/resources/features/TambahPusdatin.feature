@@ -1,3 +1,4 @@
+@safira
 Feature: Tambah Akun Pusdatin
 
   Scenario: Sukses menambah akun Pusdatin baru dengan data valid
