@@ -98,6 +98,9 @@ public class DownloadSteps {
             downloadedFile.delete();
         }
 
+        // Jeda 3 detik agar terlihat oleh pengguna sebelum menutup
+        try { Thread.sleep(3000); } catch (InterruptedException e) {}
+
         // Tutup browser
         if (driver != null) {
             driver.quit();
